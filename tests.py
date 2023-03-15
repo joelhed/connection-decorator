@@ -1,7 +1,13 @@
+import sqlite3
+
 import connection_decorator
 
 
-connector = connection_decorator.Connector(":memory:")
+def create_connection():
+    return sqlite3.connect(":memory:")
+
+
+connector = connection_decorator.Connector(connection_factory=create_connection)
 
 
 @connector.connect

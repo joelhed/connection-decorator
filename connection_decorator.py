@@ -3,11 +3,16 @@ import functools
 import sqlite3
 
 
+def create_sqlite_connection(*args, **kwargs):
+    return sqlite3.connect(*args, **kwargs)
+
+
 class Connector:
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, connection_factory=create_sqlite_connection, **kwargs):
         self.args = args
         self.kwargs = kwargs
+        self.connection_factory = connection_factory
         self.conn = None
 
     def connect(self, f):
@@ -24,7 +29,7 @@ class Connector:
                 return f(self.conn, *args, **kwargs)
 
             print("Connecting...")
-            self.conn = sqlite3.connect(*self.args, **self.kwargs)
+            self.conn = self.connection_factory(*self.args, **self.kwargs)
 
             try:
                 return_value = f(self.conn, *args, **kwargs)
